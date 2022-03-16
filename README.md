@@ -1,12 +1,10 @@
-ErlasticSearch
-======================================
+# ErlasticSearch
 
 An Erlang client for [Elasticsearch](https://www.elastic.co/products/elasticsearch).
 
-Build and Run
--------------
+## Build and Run
 
-Start a rebar3 shell 
+Start a rebar3 shell
 
 ```shell
 rebar3 shell
@@ -17,28 +15,31 @@ Create an index :
 ```erlang
 erlastic_search:create_index(<<"index_name">>).
 ```
+
 ```
 {ok, [{<<"ok">>,true},{<<"acknowledged">>,true}]}
 ```
 
-Index a document : 
+Index a document :
 
 ```erlang
-erlastic_search:index_doc(<<"index_name">>, <<"type">>, [{<<"key1">>, <<"value1">>}]).
+erlastic_search:index_doc(<<"index_name">>, [{<<"key1">>, <<"value1">>}]).
 ```
+
 ```
 {ok,[{<<"ok">>,true},
      {<<"_index">>,<<"index_name">>},
      {<<"_type">>,<<"type">>},
      {<<"_id">>,<<"T-EzM_yeTkOEHPL9cN5B2g">>},
      {<<"_version">>,1}]}
-````
+```
 
-Index a document (providing a document id) : 
+Index a document (providing a document id) :
 
 ```erlang
-erlastic_search:index_doc_with_id(<<"index_name">>, <<"type">>, <<"id1">>, [{<<"key1">>, <<"value1">>}]).
+erlastic_search:index_doc_with_id(<<"index_name">>, <<"id1">>, [{<<"key1">>, <<"value1">>}]).
 ```
+
 ```
 {ok,[{<<"ok">>,true},
      {<<"_index">>,<<"index_name">>},
@@ -47,11 +48,12 @@ erlastic_search:index_doc_with_id(<<"index_name">>, <<"type">>, <<"id1">>, [{<<"
      {<<"_version">>,2}]}
 ```
 
-Search for a document : 
+Search for a document :
 
 ```erlang
-erlastic_search:search(<<"index_name">>, <<"type">>, <<"key1:value1">>).
+erlastic_search:search(<<"index_name">>, <<"key1:value1">>).
 ```
+
 ```
 {ok,[{<<"took">>,6},
      {<<"timed_out">>,false},
@@ -78,8 +80,7 @@ erlastic_search:search(<<"index_name">>, <<"type">>, <<"key1:value1">>).
           {<<"_source">>,[{<<"key1">>,<<"value1">>}]}]]}]}]}
 ```
 
-Testing
--------
+## Testing
 
 In another terminal use docker-compose to start an Elasticsearch instance :
 
@@ -99,8 +100,7 @@ Run Common Test:
 rebar3 ct
 ```
 
-Using another JSON library than `jsx`
--------------------------------------
+## Using another JSON library than `jsx`
 
 By default, we assume all the JSON erlang objects passed to us are in
 [`jsx`](https://github.com/talentdeficit/jsx)'s representation.
@@ -124,11 +124,13 @@ For example, [`jiffy`](https://github.com/davisp/jiffy):
 3> jsx:decode(SimpleJson).
 [{<<"key">>,<<"value">>}]
 ```
+
 In that case, you probably want `erlastic_search` to use your JSON
 representation of choice instead of `jsx`'s.
 
 You can do so by defining the `ERLASTIC_SEARCH_JSON_MODULE` environment
 variable when compiling `erlastic_search`, for example:
+
 ```shell
 export ERLASTIC_SEARCH_JSON_MODULE=jiffy
 rebar compile
@@ -141,4 +143,5 @@ of a module, in your path, that defines the two following callbacks:
 -callback encode(erlastic_json()) -> binary().
 -callback decode(binary()) -> erlastic_json().
 ```
+
 where `erlastic_json()` is a type mapping to your JSON representation of choice.
