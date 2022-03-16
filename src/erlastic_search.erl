@@ -344,7 +344,7 @@ index_doc(Params, Index, Doc) ->
 
 -spec index_doc_with_opts(#erls_params{}, binary(), erlastic_json() | binary(), list()) -> {ok, erlastic_success_result()} | {error, any()}.
 index_doc_with_opts(Params, Index, Doc, Opts) when is_list(Opts) ->
-    erls_resource:post(Params, filename:join([Index, <<"_create">>]), [], Opts, maybe_encode_doc(Doc), Params#erls_params.http_client_options).
+    erls_resource:post(Params, filename:join([Index, <<"_doc">>]), [], Opts, maybe_encode_doc(Doc), Params#erls_params.http_client_options).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -365,7 +365,7 @@ index_doc_with_id(Params, Index, Id, Doc) ->
 index_doc_with_id_opts(Params, Index, undefined, Doc, Opts) ->
     index_doc_with_opts(Params, Index, Doc, Opts);
 index_doc_with_id_opts(Params, Index, Id, Doc, Opts) when is_list(Opts) ->
-    erls_resource:post(Params, filename:join([Index, Id]), [], Opts, maybe_encode_doc(Doc), Params#erls_params.http_client_options).
+    erls_resource:post(Params, filename:join([Index, <<"_create">>, Id]), [], Opts, maybe_encode_doc(Doc), Params#erls_params.http_client_options).
 
 %%--------------------------------------------------------------------
 %% @doc Update the document partly.The Doc Id must exist.
@@ -385,7 +385,7 @@ update_doc_opts(Params, Index, Id, Doc, Opts) when is_list(Opts), (is_list(Doc) 
     DocBin = erls_json:encode(Doc),
     %% we cannot use erls_json to generate this, see the doc string for `erls_json:encode/1'
     Body = <<"{\"doc\":", DocBin/binary, "}">>,
-    erls_resource:post(Params, filename:join([Index, Id, "_update"]), [], Opts,
+    erls_resource:put(Params, filename:join([Index, <<"_doc">>, Id]), [], Opts,
         Body,
         Params#erls_params.http_client_options).
 
@@ -407,7 +407,7 @@ upsert_doc_opts(Params, Index, Id, Doc, Opts) when is_list(Opts), (is_list(Doc) 
     DocBin = erls_json:encode(Doc),
     %% we cannot use erls_json to generate this, see the doc string for `erls_json:encode/1'
     Body = <<"{\"doc_as_upsert\":true,\"doc\":", DocBin/binary, "}">>,
-    erls_resource:post(Params, filename:join([Index, Id, "_update"]), [], Opts,
+    erls_resource:put(Params, filename:join([Index, <<"_create">>, Id]), [], Opts,
                        Body,
                        Params#erls_params.http_client_options).
 
