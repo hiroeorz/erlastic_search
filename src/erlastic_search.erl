@@ -651,12 +651,11 @@ aliases(Params, Body) ->
 %% @end
 %%--------------------------------------------------------------------
 -type index() :: binary().
--type type() :: binary().
 -type id() :: binary() | undefined.
--type metadata_tuple() :: {index(), type(), id()} |
-                          {index(), type(), id(), headers()} |
-                          {index(), type(), id(), erlastic_json()} |
-                          {index(), type(), id(), erlastic_json(), headers()}.
+-type metadata_tuple() :: {index(), id()} |
+                          {index(), id(), headers()} |
+                          {index(), id(), erlastic_json()} |
+                          {index(), id(), erlastic_json(), headers()}.
 -type operation() :: {index | create | delete | update, metadata_tuple()}.
 
 -spec bulk_operation([operation()]) -> {ok, list()} | {error, any()}.
@@ -666,14 +665,14 @@ bulk_operation(OperationIndexTypeIdJsonTuples) ->
 -spec bulk_operation(#erls_params{}, [operation()]) -> {ok, list()} | {error, any()}.
 bulk_operation(Params, OperationIndexTypeIdJsonTuples) ->
     Body = lists:map(fun
-                       Build({delete, {Index, Type, Id}}) ->
-                         Build({delete, {Index, Type, Id, [], no_body}});
-                       Build({delete, {Index, Type, Id, HeaderInformation}}) ->
-                         Build({delete, {Index, Type, Id, HeaderInformation, no_body}});
-                       Build({Operation, {Index, Type, Id, Doc}}) ->
-                         Build({Operation, {Index, Type, Id, [], Doc}});
-                       Build({Operation, {Index, Type, Id, HeaderInformation, Doc}}) ->
-                         Header = build_header(Operation, Index, Type, Id, HeaderInformation),
+                       Build({delete, {Index, Id}}) ->
+                         Build({delete, {Index, Id, [], no_body}});
+                       Build({delete, {Index, Id, HeaderInformation}}) ->
+                         Build({delete, {Index, Id, HeaderInformation, no_body}});
+                       Build({Operation, {Index, Id, Doc}}) ->
+                         Build({Operation, {Index, Id, [], Doc}});
+                       Build({Operation, {Index, Id, HeaderInformation, Doc}}) ->
+                         Header = build_header(Operation, Index, Id, HeaderInformation),
                          Header ++ build_body(Operation, Doc)
                      end, OperationIndexTypeIdJsonTuples),
 
@@ -708,10 +707,9 @@ commas([]) ->
 commas([H | T]) ->
     << H/binary, << <<",", B/binary>> || B <- T >>/binary >>.
 
-build_header(Operation, Index, Type, Id, HeaderInformation) ->
+build_header(Operation, Index, Id, HeaderInformation) ->
     Header1 = [
-      {<<"_index">>, Index},
-      {<<"_type">>, Type}
+      {<<"_index">>, Index}
       | HeaderInformation
     ],
 
