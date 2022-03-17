@@ -24,7 +24,6 @@
         ,get_mapping/0
         ,get_mapping/1
         ,get_mapping/2
-        ,get_mapping/3
         ,get_settings/0
         ,get_settings/1
         ,get_settings/2
@@ -221,7 +220,7 @@ put_mapping(Params, Index, Doc) ->
 %%--------------------------------------------------------------------
 -spec get_mapping() -> {ok, erlastic_success_result()} | {error, any()}.
 get_mapping() ->
-    get_mapping(#erls_params{}, <<"_all">>, <<"_all">>).
+    get_mapping(#erls_params{}).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -232,22 +231,10 @@ get_mapping() ->
 %%--------------------------------------------------------------------
 -spec get_mapping(#erls_params{} | binary()) -> {ok, erlastic_success_result()} | {error, any()}.
 get_mapping(#erls_params{} = Params) ->
-    get_mapping(Params, <<"_all">>, <<"_all">>);
-get_mapping(Index) when is_binary(Index) ->
-    get_mapping(#erls_params{}, Index, <<"_all">>).
+    erls_resource:get(Params, <<"_mapping">>, [], [], [], Params#erls_params.http_client_options);
 
-%%--------------------------------------------------------------------
-%% @doc
-%% If passed server parameters and an index name, retrieves the mapping for
-%% that index on that server; if passed an index name and a type name,
-%% retrieves the mapping for that specific type
-%% @end
-%%--------------------------------------------------------------------
--spec get_mapping(#erls_params{} | binary(), binary()) -> {ok, erlastic_success_result()} | {error, any()}.
-get_mapping(#erls_params{} = Params, Index) when is_binary(Index) ->
-    get_mapping(Params, Index, <<"_all">>);
-get_mapping(Index, Type) when is_binary(Index), is_binary(Type) ->
-    get_mapping(#erls_params{}, Index, Type).
+get_mapping(Index) when is_binary(Index) ->
+    get_mapping(#erls_params{}, Index).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -255,9 +242,9 @@ get_mapping(Index, Type) when is_binary(Index), is_binary(Type) ->
 %% server parameters
 %% @end
 %%--------------------------------------------------------------------
--spec get_mapping(#erls_params{}, binary(), binary()) -> {ok, erlastic_success_result()} | {error, any()}.
-get_mapping(#erls_params{} = Params, Index, Type) when is_binary(Index), is_binary(Type) ->
-    erls_resource:get(Params, filename:join([Index, <<"_mapping">>, Type]), [], [], [], Params#erls_params.http_client_options).
+-spec get_mapping(#erls_params{}, binary()) -> {ok, erlastic_success_result()} | {error, any()}.
+get_mapping(#erls_params{} = Params, Index) when is_binary(Index) ->
+    erls_resource:get(Params, filename:join([Index, <<"_mapping">>]), [], [], [], Params#erls_params.http_client_options).
 
 %%--------------------------------------------------------------------
 %% @doc
